@@ -29,7 +29,7 @@ class ApiDocumentationTest extends TestCase
     {
         $spec = json_decode(file_get_contents(base_path('docs/openapi.json')), true);
 
-        $this->assertEquals('Vovo Order Management API', $spec['info']['title']);
+        $this->assertEquals('Vovo Product Catalog API', $spec['info']['title']);
         $this->assertEquals('1.0.0', $spec['info']['version']);
     }
 
@@ -38,7 +38,7 @@ class ApiDocumentationTest extends TestCase
         $spec = json_decode(file_get_contents(base_path('docs/openapi.json')), true);
 
         $this->assertNotEmpty($spec['servers']);
-        $this->assertEquals('http://localhost:8080/api/v1', $spec['servers'][0]['url']);
+        $this->assertEquals('http://localhost:8080/api', $spec['servers'][0]['url']);
     }
 
     public function test_swagger_ui_page_loads(): void
