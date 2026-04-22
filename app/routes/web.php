@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', function () {
+    return response()->view('welcome');
+})->name('home');
+
 Route::prefix('docs')->group(function () {
     Route::view('/', 'docs.swagger')->name('docs');
     Route::get('/openapi.json', function () {
