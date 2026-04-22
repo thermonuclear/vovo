@@ -12,9 +12,13 @@
 vovo/
 ├── app/                     # Laravel application code
 │   ├── app/                 # application logic
-│   │   ├── Http/Controllers/
+│   │   ├── Http/
+│   │   │   ├── Controllers/Api/
+│   │   │   ├── Requests/
+│   │   │   └── Resources/
 │   │   ├── Models/
 │   │   ├── Providers/
+│   │   ├── Repositories/
 │   │   └── Services/
 │   ├── bootstrap/           # framework bootstrap
 │   ├── config/              # configuration files
@@ -29,9 +33,12 @@ vovo/
 │   │   └── js/
 │   ├── routes/
 │   │   ├── web.php
+│   │   ├── api.php
 │   │   └── console.php
 │   ├── storage/             # logs, cache, sessions
 │   └── tests/
+│       ├── Feature/Api/
+│       └── Unit/Services/
 ├── docker/
 │   ├── php/                 # PHP-FPM Dockerfile + php.ini
 │   └── nginx/               # Nginx Dockerfile + default.conf
@@ -41,22 +48,20 @@ vovo/
 ├── .env.example             # Docker variables template
 ├── app/.env                 # Laravel variables (gitignore)
 ├── app/.env.example         # Laravel variables template
+├── app/.env.testing         # Laravel test variables (gitignore)
 ├── start.bat / start.sh
-├── Makefile
 └── AGENTS.md
 ```
 
 ## Key Commands
-- `make up` — build and start all containers
-- `make down` — stop containers
-- `make shell` — enter PHP container
-- `make artisan ARGS="migrate"` — run artisan commands
-- `make migrate` — run migrations
-- `make migrate-fresh` — reset and re-run all migrations
-- `make seed` — run database seeders
-- `make test` — run PHPUnit tests
-- `docker compose exec php composer <cmd>` — run composer
+- `docker compose up -d --build` — build and start all containers
+- `docker compose down` — stop containers
+- `docker compose exec php bash` — enter PHP container
 - `docker compose exec php php artisan <cmd>` — run artisan commands
+- `docker compose exec php composer <cmd>` — run composer
+- `docker compose exec php php artisan migrate:fresh --seed` — reset and re-run all migrations
+- `docker compose exec php php artisan test` — run PHPUnit tests
+- `docker compose exec php php artisan pint` — format code
 
 ## Conventions
 - Two `.env` files: root for Docker, `app/.env` for Laravel
@@ -64,7 +69,6 @@ vovo/
 - Xdebug enabled on port 9003
 - Redis used for cache, sessions, and queues
 - Database charset: `utf8mb4`, collation: `utf8mb4_unicode_ci`
-- Session driver: `file`, Cache store: `file`, Queue: `sync` (dev)
 
 ## Coding Standards
 - Follow Laravel best practices and framework conventions
@@ -80,7 +84,7 @@ vovo/
   - Meaningful names for variables, methods, and classes
   - Small, focused methods (ideally < 20 lines)
   - Minimal comments — code should be self-documenting
-  - Consistent formatting (use `pint` — `make artisan ARGS="pint"`)
+  - Consistent formatting (use `pint` — `docker compose exec php php artisan pint`)
   - Early returns to reduce nesting
   - Type hints and return types where possible
 
@@ -109,6 +113,7 @@ vovo/
 - Use seeders for initial/test data
 - Foreign keys and constraints where applicable
 - Soft deletes for entities that should not be permanently removed
+- FULLTEXT индекс на `products.name` для поиска
 
 ## Testing
 - Feature-тесты используют `DatabaseTransactions` на MySQL (БД: `vovo`)
@@ -116,3 +121,4 @@ vovo/
 - Для FULLTEXT тестов используются существующие засиженные данные
 - Остальные тесты изолируются через фильтрацию по уникальной категории
 - Unit-тесты без работы с БД используют моки (Mockery)
+- Тестовая БД настраивается через `app/.env.testing`
