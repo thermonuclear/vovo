@@ -11,6 +11,15 @@ class FilterProductsRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('in_stock')) {
+            $this->merge([
+                'in_stock' => filter_var($this->input('in_stock'), FILTER_VALIDATE_BOOLEAN),
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         return [

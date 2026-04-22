@@ -4,13 +4,11 @@ namespace App\Services;
 
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Cache;
 
 class ProductService
 {
     private const DEFAULT_PER_PAGE = 15;
     private const MAX_PER_PAGE = 100;
-    private const CACHE_TTL = 300;
 
     public function __construct(
         private readonly ProductRepositoryInterface $repository,
@@ -23,11 +21,7 @@ class ProductService
         $sort = $params['sort'] ?? 'newest';
         $perPage = $this->normalizePerPage($params['per_page'] ?? self::DEFAULT_PER_PAGE);
 
-        $cacheKey = $this->buildCacheKey($filters, $sort, $perPage);
-
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($filters, $sort, $perPage) {
-            return $this->repository->getFiltered($filters, $sort, $perPage);
-        });
+        return $this->repository->getFiltered($filters, $sort, $perPage);
     }
 
     private function normalizeFilters(array $params): array
@@ -70,16 +64,5 @@ class ProductService
         }
 
         return min($perPage, self::MAX_PER_PAGE);
-    }
-
-    private function buildCacheKey(array $filters, string $sort, int $perPage): string
-    {
-        ksort($filters);
-
-        return 'products:' . md5(json_encode([
-            'filters' => $filters,
-            'sort' => $sort,
-            'per_page' => $perPage,
-        ]));
     }
 }
